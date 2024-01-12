@@ -12,34 +12,31 @@
 
 int wWidth = 1280, wHeight = 960;
 
-GLFWwindow* window;
-Shader* basicShader;
+GLFWwindow *window;
+Shader *basicShader;
 
 glm::mat4 projectionMatrix;
 glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec2 dimension = glm::vec2(200.f, 200.f); // width and height of the cube
 float speed = 10.0f;
-bool mouseMode = false; 
+bool mouseMode = false;
 
 #ifdef __EMSCRIPTEN__
 
-
 EM_JS(int, getCanvasWidth, (), {
 	return Module.canvas.width;
-	});
-
+});
 
 EM_JS(int, getCanvasHeight, (), {
 	return Module.canvas.height;
-	});
+});
 #endif // __EMSCRIPTEN__
 
-
-void updateProjectionMatrix() {
+void updateProjectionMatrix()
+{
 	glm::mat4 proj = glm::ortho(0.0f, static_cast<float>(wWidth), 0.0f, static_cast<float>(wHeight), -1.0f, 1.0f);
 	projectionMatrix = proj;
 }
-
 
 void resizeCanvas()
 {
@@ -48,23 +45,18 @@ void resizeCanvas()
 	{
 		wWidth = w;
 		wHeight = h;
-		updateProjectionMatrix(); 
+		updateProjectionMatrix();
 	}
 }
-
-
-
 
 void loop()
 {
 	glfwPollEvents();
-	
-	resizeCanvas(); 
 
+	resizeCanvas();
 
 	basicShader->setUniformMat4f("u_Projection", projectionMatrix);
 	basicShader->setUniformMat4f("u_TranslationMat", glm::translate(glm::mat4(1), position));
-
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -75,53 +67,48 @@ void loop()
 	glfwSwapBuffers(window);
 }
 
-void onMouseMove(GLFWwindow* window, double offsetX, double offsetY)
+void onMouseMove(GLFWwindow *window, double offsetX, double offsetY)
 {
 	if (mouseMode)
 		position = glm::vec3(offsetX - dimension.x / 2, wHeight - offsetY - dimension.y / 2, 1.0);
 };
 
-void onMouseButtonPressed(GLFWwindow* window, int button, int action, int mods)
+void onMouseButtonPressed(GLFWwindow *window, int button, int action, int mods)
 {
-	if(button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
-		mouseMode = false; 
+	if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
+		mouseMode = false;
 }
 
-
-void onKeyDown(GLFWwindow* window, int key, int scancode, int action, int mods)
+void onKeyDown(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS && key == GLFW_KEY_M)
 		mouseMode = !mouseMode; // Toggle mouse mode
 
 	if (!mouseMode && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
-			switch (key)
-			{
-			case GLFW_KEY_W:
-			case GLFW_KEY_UP:
-				position += glm::vec3(0.0f, speed, 0.0f);
-				break;
+		switch (key)
+		{
+		case GLFW_KEY_W:
+		case GLFW_KEY_UP:
+			position += glm::vec3(0.0f, speed, 0.0f);
+			break;
 
-			case GLFW_KEY_A:
-			case GLFW_KEY_LEFT:
-				position += glm::vec3(-speed, 0.0f, 0.0f);
-				break;
+		case GLFW_KEY_A:
+		case GLFW_KEY_LEFT:
+			position += glm::vec3(-speed, 0.0f, 0.0f);
+			break;
 
-			case GLFW_KEY_S:
-			case GLFW_KEY_DOWN:
-				position += glm::vec3(0.0f, -speed, 0.0f);
-				break;
-			case GLFW_KEY_D:
-			case GLFW_KEY_RIGHT:
-				position += glm::vec3(speed, 0.0f, 0.0f);
-				break;
-
-			};
+		case GLFW_KEY_S:
+		case GLFW_KEY_DOWN:
+			position += glm::vec3(0.0f, -speed, 0.0f);
+			break;
+		case GLFW_KEY_D:
+		case GLFW_KEY_RIGHT:
+			position += glm::vec3(speed, 0.0f, 0.0f);
+			break;
+		};
 	}
-
 }
-
-
 
 static void force_exit()
 {
@@ -132,17 +119,14 @@ static void force_exit()
 #endif
 }
 
-extern "C" int main(int argc, const char** argv)
+extern "C" int main(int argc, const char **argv)
 {
 
-
-	printf("....Radhey Shyam....\n");
-	system("cd");
+	printf("Radhey Shyam\n");
 
 	glfwInit();
 	wWidth = getCanvasHeight();
 	wHeight = getCanvasHeight();
-
 
 	window = glfwCreateWindow(wWidth, wHeight, "Radha", nullptr, nullptr);
 	if (!window)
@@ -150,17 +134,15 @@ extern "C" int main(int argc, const char** argv)
 		force_exit();
 	}
 
-
 	glfwMakeContextCurrent(window);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-
 	// Callbacks
 	glfwSetKeyCallback(window, onKeyDown);
 	glfwSetCursorPosCallback(window, onMouseMove);
-	glfwSetMouseButtonCallback(window, onMouseButtonPressed); 
+	glfwSetMouseButtonCallback(window, onMouseButtonPressed);
 
 	resizeCanvas();
 
@@ -171,28 +153,26 @@ extern "C" int main(int argc, const char** argv)
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-
 	float x = position.x, y = position.y, w = dimension.x, h = dimension.y;
 
 	float vertices[] = {
-		x, y, 0.0f, // Bottom-left
-		x + w, y, 0.0f,  // Bottom-right
-		x + w, y + h, 0.0f,   // Top-right
-		x, y + h, 0.0f   // Top-left
+			x, y, 0.0f,					// Bottom-left
+			x + w, y, 0.0f,			// Bottom-right
+			x + w, y + h, 0.0f, // Top-right
+			x, y + h, 0.0f			// Top-left
 	};
 
-	int indices[] = { 0, 1, 2, 2, 3, 0 };
+	int indices[] = {0, 1, 2, 2, 3, 0};
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
@@ -205,7 +185,7 @@ extern "C" int main(int argc, const char** argv)
 	glBindVertexArray(VAO);
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(loop, 0, 1);
-#else 
+#else
 	while (glfwShowWindow(window))
 	{
 		loop();
