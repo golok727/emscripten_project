@@ -1,0 +1,13 @@
+{
+  "C_Cpp.errorSquiggles": "enabled",
+  "files.associations": {
+    "chrono": "cpp",
+    "system_error": "cpp",
+    "xlocale": "cpp",
+    "typeinfo": "cpp"
+  },
+  "cSpell.words": [
+    "GLFW",
+    "OPENGL"
+  ]
+}

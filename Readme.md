@@ -1,4 +1,4 @@
-This is a test project with **Emscripten**
+This is a test project with **emscripten**
 
 This contains code for making a movable rectangle
 `M` to toggle move with mouse 

@@ -1,9 +1,16 @@
 #include <stdio.h>
 
-#define GLFW_INCLUDE_ES3
+// #define GLFW_INCLUDE_ES3
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
-#endif
+// For disabling error Squiggles set ENV_DEVELOPMENT in your editor as preprocessor definitions;
+#ifdef ENV_DEVELOPMENT
+#define EM_JS(ret, name, params, ...) \
+	ret name params { return; }
+#endif // ENV_DEVELOPMENT
+
+#endif // __EMSCRIPTEN__
 
 #include <GLES3/gl3.h>
 #include <GLFW/glfw3.h>
@@ -30,6 +37,7 @@ EM_JS(int, getCanvasWidth, (), {
 EM_JS(int, getCanvasHeight, (), {
 	return Module.canvas.height;
 });
+
 #endif // __EMSCRIPTEN__
 
 void updateProjectionMatrix()
